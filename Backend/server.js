@@ -1,28 +1,28 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-require("dotenv").config();
-
-const authRoutes = require("./routes/auth");
-const adminRoutes = require("./routes/admin");
-const verifyRoutes = require("./routes/verify");
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/authRoutes.js";
+import dotenv from "dotenv";
+dotenv.config();
+const PORT = process.env.PORT;
+import projectRoutes from "./routes/projectRoutes.js";
+import connectDB from "./config/Db.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+connectDB();
 
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
+app.use(express.json());
+app.use(cookieParser());
 
-app.use("/login", authRoutes);
-app.use("/admin", adminRoutes);
-app.use("/verify", verifyRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`App is listening on port : ${PORT}`);
 });

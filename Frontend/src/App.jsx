@@ -4,8 +4,8 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Projects from "./components/Projects";
 import Login from "./pages/Login";
-import AdminDashboard from "./components/AdminDashboard";
-import ProtectedRoute from "./components/ProtectedRotue";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -22,9 +22,15 @@ function App() {
               </>
             }
           />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<AdminDashboard />} />
-          </Route>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>
