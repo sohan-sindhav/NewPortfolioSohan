@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const PORT = process.env.PORT;
 import projectRoutes from "./routes/projectRoutes.js";
-import connectDB from "./config/Db.js";
+import connectDB from "./config/DB.js";
 
 const app = express();
 connectDB();
