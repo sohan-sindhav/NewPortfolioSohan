@@ -1,10 +1,17 @@
-import Project from "../models/ProjtectSchema.js";
+import mongoose from "mongoose";
+import Project from "../models/ProjectSchema.js";
 
 // @desc    Create a new project (Admin only)
 // @route   POST /api/projects
 // @access  Protected
 export const createProject = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        message: "Database not connected. Please set MONGO_URI in Backend/.env",
+      });
+    }
+
     const { projectName, githubLink, liveLink, description } = req.body;
 
     if (!projectName || !githubLink || !description) {
@@ -23,6 +30,7 @@ export const createProject = async (req, res) => {
     const savedProject = await newProject.save();
     res.status(201).json(savedProject);
   } catch (error) {
+    console.error("Error creating project:", error);
     res
       .status(500)
       .json({ message: "Server Error: Unable to create project." });
@@ -34,9 +42,15 @@ export const createProject = async (req, res) => {
 // @access  Public
 export const getAllProjects = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      console.warn("⚠️ MongoDB is not connected. Returning empty projects array.");
+      return res.status(200).json([]);
+    }
+
     const projects = await Project.find().sort({ createdAt: -1 });
     res.status(200).json(projects);
   } catch (error) {
+    console.error("Error fetching projects:", error);
     res
       .status(500)
       .json({ message: "Server Error: Unable to fetch projects." });
@@ -48,6 +62,12 @@ export const getAllProjects = async (req, res) => {
 // @access  Protected
 export const deleteProject = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        message: "Database not connected. Please set MONGO_URI in Backend/.env",
+      });
+    }
+
     const { id } = req.params;
     const deleted = await Project.findByIdAndDelete(id);
 
@@ -57,6 +77,7 @@ export const deleteProject = async (req, res) => {
 
     res.status(200).json({ message: "Project deleted successfully." });
   } catch (error) {
+    console.error("Error deleting project:", error);
     res
       .status(500)
       .json({ message: "Server Error: Unable to delete project." });
@@ -68,6 +89,12 @@ export const deleteProject = async (req, res) => {
 // @access  Protected
 export const updateProject = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        message: "Database not connected. Please set MONGO_URI in Backend/.env",
+      });
+    }
+
     const { id } = req.params;
     const updatedProject = await Project.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -80,6 +107,7 @@ export const updateProject = async (req, res) => {
 
     res.status(200).json(updatedProject);
   } catch (error) {
+    console.error("Error updating project:", error);
     res
       .status(500)
       .json({ message: "Server Error: Unable to update project." });
